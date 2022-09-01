@@ -1,6 +1,7 @@
 <?php
 
 use Illuminate\Support\Facades\Route;
+use App\Http\Controllers\AttendanceController;
 
 /*
 |--------------------------------------------------------------------------
@@ -13,11 +14,11 @@ use Illuminate\Support\Facades\Route;
 |
 */
 
-Route::get('/', function () {
-    return view('index');
-})->middleware(['auth']);
+Route::get('/', [AttendanceController::class, 'add'])->middleware(['auth']);
 Route::get('/attendance', function () {
     return view('attendance');
 })->middleware(['auth']);
+Route::post('/attendance', [AttendanceController::class, 'create'])->middleware(['auth']);
+Route::put('/attendance', [AttendanceController::class, 'update'])->middleware(['auth']);
 
 require __DIR__ . '/auth.php';
