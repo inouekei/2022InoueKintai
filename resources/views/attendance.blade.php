@@ -53,18 +53,24 @@
     display: flex;
   }
 
-  .links-wrapper a {
+  .links-wrapper a,
+  .active-page-link {
     padding: 5px 10px;
     margin: 2px;
     background-color: white;
     color: blue;
   }
+
+  .active-page-link {
+    background-color: blue;
+    color: white;
+  }
 </style>
 @section('content')
 <div class="common-ttl">
-  <a href="/attendance">&lt;</a>
-  2021-11-01
-  <a href="/attendance">&gt;</a>
+  <a href={{"/attendance?targetDate=" . $previousDateStr}}>&lt;</a>
+  {{$targetDateStr}}
+  <a href={{"/attendance?targetDate=" . $nextDateStr}}>&gt;</a>
 </div>
 <table>
   <tr>
@@ -74,58 +80,27 @@
     <th>休憩時間</th>
     <th>勤務時間</th>
   </tr>
+  @foreach($attendanceList as $attendance)
   <tr>
-    <td>user1</td>
-    <td>09:00:00</td>
-    <td>17:00:00</td>
-    <td>01:00:00</td>
-    <td>07:00:00</td>
+    <td>{{$attendance['name']}}</td>
+    <td>{{$attendance['attendanceOnStr']}}</td>
+    <td>{{$attendance['attendanceOffStr']}}</td>
+    <td>{{$attendance['totalPauseStr']}}</td>
+    <td>{{$attendance['attendanceTimeStr']}}</td>
   </tr>
-  <tr>
-    <td>user2</td>
-    <td>09:00:00</td>
-    <td>17:00:00</td>
-    <td>01:00:00</td>
-    <td>07:00:00</td>
-  </tr>
-  <tr>
-    <td>user3</td>
-    <td>09:00:00</td>
-    <td>17:00:00</td>
-    <td>01:00:00</td>
-    <td>07:00:00</td>
-  </tr>
-  <tr>
-    <td>user4</td>
-    <td>09:00:00</td>
-    <td>17:00:00</td>
-    <td>01:00:00</td>
-    <td>07:00:00</td>
-  </tr>
-  <tr>
-    <td>user5</td>
-    <td>09:00:00</td>
-    <td>17:00:00</td>
-    <td>01:00:00</td>
-    <td>07:00:00</td>
-  </tr>
+  @endforeach
 </table>
-
-<div class="links-wrapper">
+<!-- <div class="links-wrapper">
+</div> -->
+<!-- <div class="links-wrapper">
   <a href="/attendance">&lt;</a>
-  <a href="/attendance">1</a>
-  <a href="/attendance">2</a>
-  <a href="/attendance">3</a>
-  <a href="/attendance">4</a>
-  <a href="/attendance">5</a>
-  <a href="/attendance">6</a>
-  <a href="/attendance">7</a>
-  <a href="/attendance">8</a>
-  <a href="/attendance">9</a>
-  <a href="/attendance">10</a>
-  <a href="/attendance">...</a>
-  <a href="/attendance">20</a>
-  <a href="/attendance">21</a>
+  <a href={{$attendanceList->links()["elements"][0][1]}}>1</a>
+  <a href={{$attendanceList->links()["elements"][0][2]}}>2</a>
   <a href="/attendance">&gt;</a>
+</div> -->
+<div class="links-wrapper">
+  {{$attendanceList->links('pagination.default')}}
 </div>
+<!-- {{$attendanceList->links()["paginator"]['currentPag']}}
+{{$attendanceList->links()["paginator"]['lastPage']}} -->
 @endsection

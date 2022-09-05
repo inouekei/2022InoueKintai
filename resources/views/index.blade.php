@@ -38,51 +38,23 @@
 @section('content')
 <div class="common-ttl">{{$username}}さんお疲れ様です！</div>
 <div class="btn-wrapper">
-  @if(!$currentAttendanceID)
   <form action="/attendance" method="post">
     @csrf
-    <button class="stamp-btn">勤務開始</button>
+    <button class="stamp-btn" {{$disableAttendanceOn}}>勤務開始</button>
   </form>
-  <form action="/attendance" method="post">
+  <form action={{"/attendance/" . $attendance_id}} method="post">
     @csrf
-    <button class="stamp-btn" disabled>勤務終了</button>
+    <input type="hidden" name="mode" value="AttendanceOff">
+    <button class="stamp-btn" {{$disableAttendanceOff}}>勤務終了</button>
   </form>
   <form action="/pause" method="post">
     @csrf
-    <button class="stamp-btn" disabled>休憩開始</button>
+    <button class="stamp-btn" {{$disablePauseOn}}>休憩開始</button>
   </form>
-  <form action="/pause" method="post">
+  <form action={{"/pause/" . $pause_id}} method="post">
     @csrf
-    <button class="stamp-btn" disabled>休憩終了</button>
+    <input type="hidden" name="mode" value="PauseOff">
+    <button class="stamp-btn" {{$disablePauseOff}}>休憩終了</button>
   </form>
-  @else
-  <form action="/attendance" method="post">
-    @csrf
-    <button class="stamp-btn" disabled>勤務開始</button>
-  </form>
-  <form action="/attendance" method="post">
-    @csrf
-    <button class="stamp-btn">勤務終了</button>
-  </form>
-  @if(!$currentPauseID)
-  <form action="/pause" method="post">
-    @csrf
-    <button class="stamp-btn">休憩開始</button>
-  </form>
-  <form action="/pause" method="post">
-    @csrf
-    <button class="stamp-btn" disabled>休憩終了</button>
-  </form>
-  @else
-  <form action="/pause" method="post">
-    @csrf
-    <button class="stamp-btn" disabled>休憩開始</button>
-  </form>
-  <form action="/pause" method="post">
-    @csrf
-    <button class="stamp-btn">休憩終了</button>
-  </form>
-  @endif
-  @endif
 </div>
 @endsection

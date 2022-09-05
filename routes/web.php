@@ -2,6 +2,7 @@
 
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\AttendanceController;
+use App\Http\Controllers\PauseController;
 
 /*
 |--------------------------------------------------------------------------
@@ -15,10 +16,10 @@ use App\Http\Controllers\AttendanceController;
 */
 
 Route::get('/', [AttendanceController::class, 'add'])->middleware(['auth']);
-Route::get('/attendance', function () {
-    return view('attendance');
-})->middleware(['auth']);
+Route::get('/attendance', [AttendanceController::class, 'index'])->middleware(['auth']);
+Route::post('/attendance/{id}', [AttendanceController::class, 'update'])->middleware(['auth']);
 Route::post('/attendance', [AttendanceController::class, 'create'])->middleware(['auth']);
-Route::put('/attendance', [AttendanceController::class, 'update'])->middleware(['auth']);
+Route::post('/pause/{id}', [PauseController::class, 'update'])->middleware(['auth']);
+Route::post('/pause', [PauseController::class, 'create'])->middleware(['auth']);
 
 require __DIR__ . '/auth.php';

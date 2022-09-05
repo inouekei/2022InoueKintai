@@ -8,7 +8,7 @@ use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
 use Laravel\Sanctum\HasApiTokens;
 
-use DateTime;
+use Carbon\Carbon;
 
 class User extends Authenticatable
 {
@@ -44,36 +44,52 @@ class User extends Authenticatable
         'email_verified_at' => 'datetime',
     ];
 
-    public function currentAttendance()
+    public function currentStatus()
     {
-        $attendances = $this->hasMany('App\Models\Attendance');
-        if ($attendances->count() === 0) return null;
-        $last_attendance = $attendances->latest()->get()[0];
-        $last_attendance_date = new DateTime($last_attendance['start_time']);
-        $last_attendance_date_str = $last_attendance_date->format('Y-m-d');
-        $today_date = new DateTime();
-        $today_date_str = $today_date->format('Y-m-d');
-        if ($last_attendance['end_time'] === null && $last_attendance_date_str === $today_date_str) {
-            return $last_attendance;
-        }
-        return null;
-        // foreach($attendances as $attendance){
-        //     if($attendance['end_time']==null){
-        //         $last_date = $attendance['start_time']->format('Y-m-d');
-        //         $today_date = new DateTime()->format('Y-m-d');
-        //         if($last_date === $today_date){
-        //             $breaks = $attendance->hasMany('App\Models\Break');
-        // if(count($attendances)===0)return null;
-        // foreach($attendances as $attendance){
-        //     if($attendance['end_time']==null){
-        //         $last_date = $attendance['start_time']->format('Y-m-d');
-        //         $today_date = new DateTime()->format('Y-m-d');
-        //         if($last_date === $today_date){
+        $attendance_id = null;
+        $pause_id = null;
+        $disableAttendanceOn = "disabled";
+        $disableAttendanceOff = "disabled";
+        $disablePauseOn = "disabled";
+        $disablePauseOff = "disabled";
 
-        //             return $attendance['id'];
-        //         }
-        //     }
-        // }
-        // return null;
+        $today_date = Carbon::today();
+        $today_date_str = $today_date->format('Y-m-d');
+        $todaysAttendance = $this->attendanceByDate($today_date_str);
+
+        if (!$todaysAttendance) {
+            $disableAttendanceOn = "";
+        } else {
+            if ($todaysAttendance['end_time'] === null) {
+                $attendance_id = $todaysAttendance->id;
+                $disableAttendanceOff = "";
+
+                $currentPause = $todaysAttendance->currentPause();
+                if ($currentPause) {
+                    $pause_id = $currentPause->id;
+                    $disablePauseOff = "";
+                } else {
+                    $disablePauseOn = "";
+                }
+            }
+        }
+        return  [
+            'username' => $this->name,
+            'attendance_id' => $attendance_id,
+            'pause_id' => $pause_id,
+            'disableAttendanceOn' => $disableAttendanceOn,
+            'disableAttendanceOff' =>
+            $disableAttendanceOff,
+            'disablePauseOn' => $disablePauseOn,
+            'disablePauseOff' => $disablePauseOff
+        ];
+    }
+
+    public function attendanceByDate(string $dateStr)
+    {
+        $attendances = $this->hasMany('App\Models\Attendance')->whereDate('start_time', $dateStr)->get();
+        if ($attendances->count() === 0) {
+            return null;
+        } else return $attendances[0];
     }
 }

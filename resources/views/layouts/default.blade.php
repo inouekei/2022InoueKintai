@@ -22,6 +22,7 @@
       margin: 0;
       padding: 0 50px;
       background-color: white;
+      font-size: normal;
     }
 
     header ul {
@@ -30,6 +31,14 @@
       text-decoration: none;
       list-style: none;
       font-weight: bold;
+    }
+
+    header ul li form input {
+      padding: 0;
+      border-style: none;
+      background-color: white;
+      font-weight: bold;
+      font-size: 12pt;
     }
 
     header li:not(:last-child) {
@@ -79,7 +88,12 @@
         @if (Auth::check())
         <li><a href="/">ホーム</a></li>
         <li><a href="/attendance">日付一覧</a></li>
-        <li><a href="/logout">ログアウト</a></li>
+        <li>
+          <form action="/logout" method="post">
+            @csrf
+            <input type=submit value="ログアウト">
+          </form>
+        </li>
         @endif
       </ul>
     </div>
