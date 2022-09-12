@@ -1,7 +1,7 @@
 # アプリケーション名
 Atte（アット）
 ある企業の勤怠管理システム
-![front](https://user-images.githubusercontent.com/108909962/185006315-8978d3a9-6fb1-48bd-b095-7fb200fe2732.png)
+![index](https://user-images.githubusercontent.com/108909962/189556130-2090fb65-c0ba-462e-a6bc-c69920036b8f.png)
 
 ## 作成した目的
 人事評価のため
@@ -20,15 +20,14 @@ Atte（アット）
 - (実装予定)ユーザー別勤怠情報取得
 
 ## 使用技術
-- Laravel　8.x、MySQL、JWT
+- Laravel　8.x、MySQL
 
 ## 実行環境
 - PC：Chrome/Firefox/Safari 最新バージョン
 - SP：iOS/AndroidOS
 
 ## テーブル設計
-![table](https://user-images.githubusercontent.com/108909962/185005814-df48e2aa-6239-4fce-aa91-ca09e1e1793f.png)
+![table](https://user-images.githubusercontent.com/108909962/189556147-3fe69575-8aa3-421c-bc15-fc5ad9a22ec6.png)
 
 ## ER図
-![index drawio](https://user-images.githubusercontent.com/108909962/185008012-eb9f4043-cb44-4205-9434-0e8f47215fbc.png)
-
+![er](https://user-images.githubusercontent.com/108909962/189556151-8182c703-0e32-4495-870a-4fa10d21eacd.png)
