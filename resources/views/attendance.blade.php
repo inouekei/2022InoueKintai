@@ -19,7 +19,6 @@
   }
 
   .common-ttl a {
-    /* display: block; */
     margin: 0 40px;
     padding: 0 10px;
     border-style: solid;
@@ -90,17 +89,7 @@
   </tr>
   @endforeach
 </table>
-<!-- <div class="links-wrapper">
-</div> -->
-<!-- <div class="links-wrapper">
-  <a href="/attendance">&lt;</a>
-  <a href={{$attendanceList->links()["elements"][0][1]}}>1</a>
-  <a href={{$attendanceList->links()["elements"][0][2]}}>2</a>
-  <a href="/attendance">&gt;</a>
-</div> -->
 <div class="links-wrapper">
   {{$attendanceList->links('pagination.default')}}
 </div>
-<!-- {{$attendanceList->links()["paginator"]['currentPag']}}
-{{$attendanceList->links()["paginator"]['lastPage']}} -->
 @endsection

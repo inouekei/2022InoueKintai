@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Models\Pause;
 use Illuminate\Http\Request;
+use App\Http\Requests\PauseRequest;
 use Illuminate\Support\Facades\Auth;
 
 use DateTime;
@@ -29,7 +30,8 @@ class PauseController extends Controller
             return redirect('/');
         }
     }
-    public function update(Request $request, $id)
+    public function update(PauseRequest $request, $id)
+    // public function update(Request $request, $id)
     {
         $item = Pause::where('id', $id)->get()[0];
         if ($request['mode'] === 'PauseOff') {

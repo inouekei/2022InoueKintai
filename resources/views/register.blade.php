@@ -1,5 +1,9 @@
 @extends('layouts.default')
 <style>
+  form {
+    position: relative;
+  }
+
   input {
     display: block;
     width: 400px;
@@ -22,6 +26,26 @@
     font-weight: bold;
   }
 
+  .name-error,
+  .email-error,
+  .password-error {
+    position: absolute;
+    line-height: 0;
+    color: red;
+  }
+
+  .name-error {
+    top: 50px;
+  }
+
+  .email-error {
+    top: 120px;
+  }
+
+  .password-error {
+    top: 190px;
+  }
+
   .auth-btn {
     border-style: none;
     background-color: blue;
@@ -34,14 +58,23 @@
   <table>
     @csrf
     <tr>
-      <input type="text" name="name" placeholder="名前">
+      <input class="name-input" type="text" name="name" placeholder="名前">
     </tr>
+    @error('name')
+    <small class="name-error">{{$message}}</small>
+    @enderror
     <tr>
-      <input type="text" name="email" placeholder="メールアドレス">
+      <input class="email-input" type="text" name="email" placeholder="メールアドレス">
     </tr>
+    @error('email')
+    <small class="email-error">{{$message}}</small>
+    @enderror
     <tr>
-      <input type="password" name="password" placeholder="パスワード">
+      <input class="password-input" type="password" name="password" placeholder="パスワード">
     </tr>
+    @error('password')
+    <small class="password-error">{{$message}}</small>
+    @enderror
     <tr>
       <input type="password" name="password_confirmation" placeholder="確認用パスワード">
     </tr>

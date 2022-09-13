@@ -1,5 +1,9 @@
 @extends('layouts.default')
 <style>
+  form {
+    position: relative;
+  }
+
   input {
     display: block;
     width: 400px;
@@ -22,6 +26,21 @@
     font-weight: bold;
   }
 
+  .email-error,
+  .password-error {
+    position: absolute;
+    line-height: 0;
+    color: red;
+  }
+
+  .email-error {
+    top: 50px;
+  }
+
+  .password-error {
+    top: 120px;
+  }
+
   .auth-btn {
     border-style: none;
     background-color: blue;
@@ -36,9 +55,15 @@
     <tr>
       <input type="text" name="email" placeholder="メールアドレス">
     </tr>
+    @error('email')
+    <small class="email-error">{{$message}}</small>
+    @enderror
     <tr>
       <input type="password" name="password" placeholder="パスワード">
     </tr>
+    @error('password')
+    <small class="password-error">{{$message}}</small>
+    @enderror
     <tr>
       <input class="auth-btn" type="submit" value="ログイン">
     </tr>

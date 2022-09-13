@@ -40,12 +40,6 @@ class Attendance extends Model
                 $totalPause->add($diff);
             }
             $totalPause = $standardTime->copy()->diff($totalPause);
-            // if ($this->id === 4) {
-            //     dd($temp);
-            // }
-            if ($this->id === 4) {
-                // dd($totalPause);
-            }
             return $totalPause;
         }
     }
@@ -62,7 +56,7 @@ class Attendance extends Model
             $totalTime->sub($pause);
             $attendanceTime = $standardTime->copy()->diff($totalTime);
         } else {
-            $attendanceTime = '入力なし';
+            $attendanceTime = config('const.NO_RECORD');
         }
         return $attendanceTime;
     }
@@ -78,8 +72,8 @@ class Attendance extends Model
             $attendanceOffStr = $attendanceOff->format('h:i:s');
             $attendanceTimeStr = $this->attendanceTime($totalPause)->format('%H:%I:%S');
         } else {
-            $attendanceOffStr = '入力なし';
-            $attendanceTimeStr = '入力なし';
+            $attendanceOffStr = config('const.NO_RECORD');
+            $attendanceTimeStr = config('const.NO_RECORD');
         }
         return [
             'attendanceOnStr' => $attendanceOnStr,

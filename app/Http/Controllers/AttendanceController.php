@@ -4,20 +4,23 @@ namespace App\Http\Controllers;
 
 use App\Models\User;
 use App\Models\Attendance;
-use App\Models\Pause;
 use Illuminate\Http\Request;
+use App\Http\Requests\AttendanceRequest;
+use App\Http\Requests\AttendanceListRequest;
 use Illuminate\Support\Facades\Auth;
 
 use Carbon\Carbon;
-// use Illuminate\Pagination\LengthAwarePaginator;
+use Illuminate\Pagination\LengthAwarePaginator;
 
 class AttendanceController extends Controller
 {
-    public function index(Request $request)
+    public function index(AttendanceListRequest $request)
     {
         $currentDate = Carbon::today();
         if (isset($request['targetDate'])) {
-            if ($request['targetDate'] != null) {
+            if ($request['targetDate'] == null) {
+                return redirect('/attendance');
+            } else {
                 $targetDateStr = $request['targetDate'];
                 $tempTargetDate = Carbon::parse($targetDateStr);
                 if ($currentDate->copy()->diffInDays($tempTargetDate) > 0) {
@@ -26,7 +29,7 @@ class AttendanceController extends Controller
                     $nextDateStr =
                         $nextDate->format('Y-m-d');
                 }
-            } else return redirect('/attendance');
+            }
         }
         if (!isset($targetDate)) {
             $targetDate = $currentDate;
@@ -38,38 +41,57 @@ class AttendanceController extends Controller
         $previousDateStr = $previousDate->format('Y-m-d');
 
         $attendanceList = User::Paginate(5);
-        foreach ($attendanceList as $attendanceRow) {
-            $attendance = $attendanceRow->attendanceByDate($targetDateStr);
-            unset($attendanceRow['id']);
-            unset($attendanceRow['email']);
-            unset($attendanceRow['password']);
-            unset($attendanceRow['created_at']);
-            unset($attendanceRow['updated_at']);
-            unset($attendanceRow['email_verified_at']);
-            unset($attendanceRow['remember_token']);
+
+        $users = User::All();
+        $attendanceArr = [];
+        foreach ($users as $user) {
+            $attendanceRow = [];
+            $attendanceRow['name'] = $user['name'];
+
+            $attendance = $user->attendanceByDate($targetDateStr);
             if ($attendance) {
-                $attendanceOnStr = $attendance->attendanceDispStr()['attendanceOnStr'];
-                $attendanceOffStr = $attendance->attendanceDispStr()['attendanceOffStr'];
-                $totalPauseStr = $attendance->attendanceDispStr()['totalPauseStr'];
-                $attendanceTimeStr = $attendance->attendanceDispStr()['attendanceTimeStr'];
+                $attendanceRow['attendanceOnStr'] = $attendance->attendanceDispStr()['attendanceOnStr'];
+                $attendanceRow['attendanceOffStr'] = $attendance->attendanceDispStr()['attendanceOffStr'];
+                $attendanceRow['totalPauseStr'] = $attendance->attendanceDispStr()['totalPauseStr'];
+                $attendanceRow['attendanceTimeStr'] = $attendance->attendanceDispStr()['attendanceTimeStr'];
             } else {
-                $attendanceOnStr = "入力なし";
-                $attendanceOffStr = "入力なし";
-                $totalPauseStr = "入力なし";
-                $attendanceTimeStr = "入力なし";
+                $attendanceRow['attendanceOnStr'] = config('const.NO_RECORD');
+                $attendanceRow['attendanceOffStr'] = config('const.NO_RECORD');
+                $attendanceRow['totalPauseStr'] =  config('const.NO_RECORD');
+                $attendanceRow['attendanceTimeStr'] =  config('const.NO_RECORD');
             }
-            $attendanceRow['attendanceOnStr'] = $attendanceOnStr;
-            $attendanceRow['attendanceOffStr'] = $attendanceOffStr;
-            $attendanceRow['totalPauseStr'] = $totalPauseStr;
-            $attendanceRow['attendanceTimeStr'] = $attendanceTimeStr;
-            // $attendanceRow = [
-            //     'name' => $attendanceRow['name'],
-            //     'attendanceOnStr' => $attendanceOnStr,
-            //     'attendanceOffStr' => $attendanceOffStr,
-            //     'totalPauseStr' => $totalPauseStr,
-            //     'attendanceTimeStr' => $attendanceTimeStr
-            // ];
+            array_push($attendanceArr, $attendanceRow);
         }
+        $attendanceCol = collect($attendanceArr);
+        $attendanceList = new LengthAwarePaginator(
+            $attendanceCol->forPage($request->page, 5),
+            count($attendanceCol),
+            5,
+            $request->page,
+            array('path'=>$request->url())
+        );
+
+        // foreach ($attendanceList as $attendanceRow) {
+        //     $attendance = $attendanceRow->attendanceByDate($targetDateStr);
+        //     unset($attendanceRow['id']);
+        //     unset($attendanceRow['email']);
+        //     unset($attendanceRow['password']);
+        //     unset($attendanceRow['created_at']);
+        //     unset($attendanceRow['updated_at']);
+        //     unset($attendanceRow['email_verified_at']);
+        //     unset($attendanceRow['remember_token']);
+        //     if ($attendance) {
+        //         $attendanceRow['attendanceOnStr'] = $attendance->attendanceDispStr()['attendanceOnStr'];
+        //         $attendanceRow['attendanceOffStr'] = $attendance->attendanceDispStr()['attendanceOffStr'];
+        //         $attendanceRow['totalPauseStr'] = $attendance->attendanceDispStr()['totalPauseStr'];
+        //         $attendanceRow['attendanceTimeStr'] = $attendance->attendanceDispStr()['attendanceTimeStr'];
+        //     } else {
+        //         $attendanceRow['attendanceOnStr'] = config('const.NO_RECORD');
+        //         $attendanceRow['attendanceOffStr'] = config('const.NO_RECORD');
+        //         $attendanceRow['totalPauseStr'] =  config('const.NO_RECORD');
+        //         $attendanceRow['attendanceTimeStr'] =  config('const.NO_RECORD');
+        //     }
+        // }
         return view('attendance', [
             'targetDateStr' => $targetDateStr,
             'previousDateStr' => $previousDateStr,
@@ -105,7 +127,7 @@ class AttendanceController extends Controller
             return redirect('/');
         }
     }
-    public function update(Request $request, $id)
+    public function update(AttendanceRequest $request, $id)
     {
         $item = Attendance::where('id', $id)->get()[0];
         if ($request['mode'] === 'AttendanceOff') {
