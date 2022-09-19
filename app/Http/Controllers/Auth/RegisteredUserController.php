@@ -14,6 +14,11 @@ use Illuminate\Validation\Rules;
 
 class RegisteredUserController extends Controller
 {
+    public function index()
+    {
+        $users = User::Paginate(5);
+        return view('users', ['users' => $users]);
+    }
     /**
      * Display the registration view.
      *

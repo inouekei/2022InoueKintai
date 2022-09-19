@@ -85,9 +85,12 @@
     </div>
     <div>
       <ul>
-        @if (Auth::check())
+        @if(Auth::check())
+        @if(Auth::user()->hasVerifiedEmail())
         <li><a href="/">ホーム</a></li>
         <li><a href="/attendance">日付一覧</a></li>
+        <li><a href="/users">ユーザー一覧</a></li>
+        @endif
         <li>
           <form action="/logout" method="post">
             @csrf

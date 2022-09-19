@@ -15,11 +15,16 @@ use App\Http\Controllers\PauseController;
 |
 */
 
-Route::get('/', [AttendanceController::class, 'add'])->middleware(['auth']);
-Route::get('/attendance', [AttendanceController::class, 'index'])->middleware(['auth']);
-Route::post('/attendance/{id}', [AttendanceController::class, 'update'])->middleware(['auth']);
-Route::post('/attendance', [AttendanceController::class, 'create'])->middleware(['auth']);
-Route::post('/pause/{id}', [PauseController::class, 'update'])->middleware(['auth']);
-Route::post('/pause', [PauseController::class, 'create'])->middleware(['auth']);
+Route::middleware(['auth', 'verified'])->group(
+  function () {
+    Route::get('/', [AttendanceController::class, 'add']);
+    Route::get('/attendance', [AttendanceController::class, 'index']);
+    Route::post('/attendance/{id}', [AttendanceController::class, 'update']);
+    Route::post('/attendance', [AttendanceController::class, 'create']);
+    Route::post('/individual', [AttendanceController::class, 'show']);
+    Route::post('/pause/{id}', [PauseController::class, 'update']);
+    Route::post('/pause', [PauseController::class, 'create']);
+  }
+);
 
 require __DIR__ . '/auth.php';

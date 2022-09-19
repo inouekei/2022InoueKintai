@@ -8,8 +8,9 @@ use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\RateLimiter;
 use Illuminate\Support\Str;
 use Illuminate\Validation\ValidationException;
+use App\Http\Requests\Auth\LoginRequest;
 
-class UserLoginRequest extends FormRequest
+class UserLoginRequest extends LoginRequest
 {
     /**
      * Determine if the user is authorized to make this request.
@@ -44,6 +45,7 @@ class UserLoginRequest extends FormRequest
             'password.required' => config('const.REQUIRED'),
             'password.min' => config('const.UNDER_MIN'),
             'password.max' => config('const.OVER_MAX'),
+            'email.failed' => config('const.NOT_IDENTIFIED'),
         ];
     }
     /**

@@ -10,7 +10,7 @@ use Laravel\Sanctum\HasApiTokens;
 
 use Carbon\Carbon;
 
-class User extends Authenticatable
+class User extends Authenticatable implements MustVerifyEmail
 {
     use HasApiTokens, HasFactory, Notifiable;
 
@@ -91,5 +91,35 @@ class User extends Authenticatable
         if ($attendances->count() === 0) {
             return null;
         } else return $attendances[0];
+    }
+    public function attendanceRowsByMonth(string $dateStr)
+    {
+        $attendanceList = [];
+        $start = Carbon::Parse($dateStr);
+        $end = $start->copy()->endOfMonth();
+        for ($i = $start->copy(); $i->between($start, $end); $i->addDays(1)) {
+            $attendanceRow = $this->attendanceRow($i->format('Y-m-d'));
+            array_push($attendanceList, $attendanceRow);
+        }
+        return $attendanceList;
+    }
+    public function attendanceRow(string $targetDateStr)
+    {
+        $attendanceRow = [];
+        $attendanceRow['name'] = $this->name;
+        $attendanceRow['targetDateStr'] = $targetDateStr;
+        $attendance = $this->attendanceByDate($targetDateStr);
+        if ($attendance) {
+            $attendanceRow['attendanceOnStr'] = $attendance->attendanceDispStr()['attendanceOnStr'];
+            $attendanceRow['attendanceOffStr'] = $attendance->attendanceDispStr()['attendanceOffStr'];
+            $attendanceRow['totalPauseStr'] = $attendance->attendanceDispStr()['totalPauseStr'];
+            $attendanceRow['attendanceTimeStr'] = $attendance->attendanceDispStr()['attendanceTimeStr'];
+        } else {
+            $attendanceRow['attendanceOnStr'] = config('const.NO_RECORD');
+            $attendanceRow['attendanceOffStr'] = config('const.NO_RECORD');
+            $attendanceRow['totalPauseStr'] =  config('const.NO_RECORD');
+            $attendanceRow['attendanceTimeStr'] =  config('const.NO_RECORD');
+        }
+        return $attendanceRow;
     }
 }

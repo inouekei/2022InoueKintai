@@ -68,30 +68,8 @@ class AttendanceController extends Controller
             count($attendanceCol),
             5,
             $request->page,
-            array('path'=>$request->url())
+            array('path' => $request->url())
         );
-
-        // foreach ($attendanceList as $attendanceRow) {
-        //     $attendance = $attendanceRow->attendanceByDate($targetDateStr);
-        //     unset($attendanceRow['id']);
-        //     unset($attendanceRow['email']);
-        //     unset($attendanceRow['password']);
-        //     unset($attendanceRow['created_at']);
-        //     unset($attendanceRow['updated_at']);
-        //     unset($attendanceRow['email_verified_at']);
-        //     unset($attendanceRow['remember_token']);
-        //     if ($attendance) {
-        //         $attendanceRow['attendanceOnStr'] = $attendance->attendanceDispStr()['attendanceOnStr'];
-        //         $attendanceRow['attendanceOffStr'] = $attendance->attendanceDispStr()['attendanceOffStr'];
-        //         $attendanceRow['totalPauseStr'] = $attendance->attendanceDispStr()['totalPauseStr'];
-        //         $attendanceRow['attendanceTimeStr'] = $attendance->attendanceDispStr()['attendanceTimeStr'];
-        //     } else {
-        //         $attendanceRow['attendanceOnStr'] = config('const.NO_RECORD');
-        //         $attendanceRow['attendanceOffStr'] = config('const.NO_RECORD');
-        //         $attendanceRow['totalPauseStr'] =  config('const.NO_RECORD');
-        //         $attendanceRow['attendanceTimeStr'] =  config('const.NO_RECORD');
-        //     }
-        // }
         return view('attendance', [
             'targetDateStr' => $targetDateStr,
             'previousDateStr' => $previousDateStr,
@@ -140,5 +118,50 @@ class AttendanceController extends Controller
             'end_time' => $item->end_time,
         ]);
         return redirect('/');
+    }
+
+    public function show(Request $request)
+    {
+        $targetMonths = $this->targetMonths($request);
+        $id = $request->id;
+        $user = User::find($id);
+        $attendanceList = $user->attendanceRowsByMonth($targetMonths['targetMonth']);
+        return view(
+            'individual',
+            [
+                'username' => $user->name,
+                'id' => $user->id,
+                'targetMonthStr' => $targetMonths['targetMonthStr'],
+                'previousMonthStr' => $targetMonths['previousMonthStr'],
+                'nextMonthStr' => $targetMonths['nextMonthStr'],
+                'attendanceList' => $attendanceList,
+            ]
+        );
+    }
+
+    private function targetMonths(Request $request)
+    {
+        $currentMonth = Carbon::today()->startOfMonth();
+        if (isset($request['targetMonth']) && $request['targetMonth'] != null) {
+            $targetMonthStr = $request['targetMonth'];
+            $tempTargetMonth = Carbon::parse($targetMonthStr . '-01');
+            if ($currentMonth->copy()->diffInDays($tempTargetMonth) > 0) {
+                $targetMonth = $tempTargetMonth;
+                $nextMonthStr = $targetMonth->copy()->addMonthsNoOverflow(1)->format('Y-m');
+            }
+        }
+        if (!isset($targetMonth)) {
+            $targetMonth = $currentMonth;
+            $targetMonthStr =
+                $targetMonth->format('Y-m');
+            $nextMonthStr = null;
+        }
+        $previousMonthStr = $targetMonth->copy()->subMonthsNoOverflow(1)->format('Y-m');
+        return [
+            'targetMonth' => $targetMonth,
+            'targetMonthStr' => $targetMonthStr,
+            'nextMonthStr' => $nextMonthStr,
+            'previousMonthStr' => $previousMonthStr,
+        ];
     }
 }

@@ -9,4 +9,5 @@ return [
   'NOT_UNIQUE' => '登録済みのメールアドレスです',
   'UNDER_MIN' => '8文字以上入力してください',
   'NOT_CONFIRMED' => 'パスワードが一致しません',
+  'NOT_IDENTIFIED' => 'メールアドレスもしくはパスワードが異なります',
 ];
