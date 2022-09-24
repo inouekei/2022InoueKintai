@@ -1,0 +1,33 @@
+<?php
+
+namespace Tests\Feature;
+
+use Illuminate\Foundation\Testing\RefreshDatabase;
+use Illuminate\Foundation\Testing\WithFaker;
+use Tests\TestCase;
+use App\Models\User;
+
+Class AttendanceCreateTest extends TestCase
+{
+    use RefreshDatabase;
+    /**
+     * A basic feature test example.
+     *
+     * @return void
+     */
+    public function testAccessWithoutAttendance()
+    {
+        $this->user = User::factory()->create();
+        $this->ActingAs($this->user)->post('/attendance')->assertStatus(302);
+	
+	$this->assertDatabaseHas('attendances',[
+	        'user_id'=>$this->user->id,
+	    ]);
+    }
+    public function testAccessWithAttendance()
+    {
+        $this->user = User::factory()->create();
+        $this->ActingAs($this->user)->post('/attendance');
+        $this->ActingAs($this->user)->post('/attendance')->assertStatus(400);
+	
+   }}

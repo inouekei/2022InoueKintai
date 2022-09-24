@@ -15,7 +15,11 @@ class PauseController extends Controller
     {
         $user = Auth::user();
         $currentStatus = $user->currentStatus();
-        if ($currentStatus['pause_id']) {
+        if (!$currentStatus['attendance_id']) {
+            return response()->json([
+                'message' => 'Not on Attendance'
+            ], 400);
+        } elseif ($currentStatus['pause_id']) {
             return response()->json([
                 'message' => 'Already on Pause'
             ], 400);

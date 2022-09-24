@@ -1,0 +1,50 @@
+<?php
+
+namespace Tests\Feature;
+
+use Illuminate\Foundation\Testing\RefreshDatabase;
+use Illuminate\Foundation\Testing\WithFaker;
+use Tests\TestCase;
+use App\Models\User;
+use Carbon\Carbon;
+
+class AttendanceShowTest extends TestCase
+{
+    use RefreshDatabase;
+    /**
+     * A basic feature test example.
+     *
+     * @return void
+     */
+    public function testWithoutTargetMonth()
+    {
+        $this->user = User::factory()->create();
+	$this->ActingAs($this->user)->post('individual',[
+	    'id' => $this->user->id,
+	])->assertOK();
+    }
+    public function testWithThisMonth()
+    {
+        $this->user = User::factory()->create();
+	$this->ActingAs($this->user)->post('individual',[
+	    'id' => $this->user->id,
+	    'targetMonth' => Carbon::now()->startOfMonth()->format('Y-M');
+	])->assertOK();
+    }
+    public function testWithNextMonth()
+    {
+        $this->user = User::factory()->create();
+	$this->ActingAs($this->user)->post('individual',[
+	    'id' => $this->user->id,
+	    'targetMonth' => Carbon::now()->startOfMonth()->addMonth()->format('Y-M');
+	])->assertOK();
+    }
+    public function testWithLastMonth()
+    {
+        $this->user = User::factory()->create();
+	$this->ActingAs($this->user)->post('individual',[
+	    'id' => $this->user->id,
+	    'targetMonth' => Carbon::now()->startOfMonth()->subMonth()->format('Y-M');
+	])->assertOK();
+    }
+}

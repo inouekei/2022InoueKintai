@@ -1,0 +1,61 @@
+<?php
+
+namespace Tests\Feature;
+
+use Illuminate\Foundation\Testing\RefreshDatabase;
+use Illuminate\Foundation\Testing\WithFaker;
+use Tests\TestCase;
+use App\Models\User;
+use Carbon\Carbon;
+
+class AttendanceIndexTest extends TestCase
+{
+    use RefreshDatabase;
+    /**
+     * A basic feature test example.
+     *
+     * @return void
+     */
+    public function testAccessWithoutDate()
+    {
+        $this->user = User::factory()->create();
+	$this->ActingAs($this->user)->get('/attendance')->assertOk();
+    }
+    public function testAccessWithTodayForDate()
+    {
+        $this->user = User::factory()->create();
+	$this->ActingAs($this->user)->get('/attendance',[
+	    'targetDate' => Carbon::today()->format('Y-m-d'),
+	])->assertOk();
+    }
+    public function testAccessWithYesterdayForDate()
+    {
+        $this->user = User::factory()->create();
+	$this->ActingAs($this->user)->get('/attendance',[
+	    'targetDate' => Carbon::yesterday()->format('Y-m-d'),
+	])->assertOk();
+    }
+    public function testAccessWithTomorrowForDate()
+    {
+        $this->user = User::factory()->create();
+	$this->ActingAs($this->user)->get('/attendance',[
+	    'targetDate' => Carbon::tomorrow()->format('Y-m-d'),
+	])->assertOk();
+    }
+    public function testAccessWithNullForDate()
+    {
+        $this->user = User::factory()->create();
+	$this->ActingAs($this->user)->get('/attendance',[
+	    'targetDate' => '',
+	])->assertStatus(302);
+    }
+    public function testAccessWithPage()
+    {
+        User::factory()->count(10)->create();
+        $this->user = User::first();
+	$this->ActingAs($this->user)->get('/attendance',[
+	    'page' => '2',
+	])->assertOk();
+    }
+
+}
