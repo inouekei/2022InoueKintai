@@ -23,7 +23,7 @@ name: Install PHP Extensions
 command: sudo docker-php-ext-install pdo_mysql
 - restore_cache:
 keys:
-- v1-dependencies-{{ checksum ￾laravel/composer.json￾ }}
+- v1-dependencies-{{ checksum "laravel/composer.json" }}
 - v1-dependencies-
 - run:
 name: composer install
@@ -32,7 +32,7 @@ command: composer install -n --prefer-dist
 - save_cache:
 paths:
 - ./vendor
-key: v1-dependencies-{{ checksum ￾laravel/composer.json￾ }}
+key: v1-dependencies-{{ checksum "laravel/composer.json" }}
 - run:
 name: Wait for db
 command: dockerize -wait tcp://localhost:3306 -timeout 1m
