@@ -1,3 +1,6 @@
 return [
-'NO_RECORD' => '-',
+
+    'NO_RECORD' => '-',
+    'TIME_FORMAT' => 'H:i:s',
+    
 ];

@@ -64,12 +64,12 @@ class Attendance extends Model
     public function attendanceDispStr()
     {
         $attendanceOn = Carbon::parse($this->start_time);
-        $attendanceOnStr = $attendanceOn->format('h:i:s');
+        $attendanceOnStr = $attendanceOn->format('H:i:s');
         $totalPause = $this->totalPause();
         $totalPauseStr = $totalPause->format('%H:%I:%S');
         if ($this->end_time) {
             $attendanceOff = Carbon::parse($this->end_time);
-            $attendanceOffStr = $attendanceOff->format('h:i:s');
+            $attendanceOffStr = $attendanceOff->format('H:i:s');
             $attendanceTimeStr = $this->attendanceTime($totalPause)->format('%H:%I:%S');
         } else {
             $attendanceOffStr = config('const.NO_RECORD');
